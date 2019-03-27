@@ -2,9 +2,12 @@ package net.lzzy.cinemanager.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
 import android.widget.SearchView;
@@ -12,16 +15,20 @@ import android.widget.TextView;
 
 import net.lzzy.cinemanager.R;
 import net.lzzy.cinemanager.fragments.CinemasFragment;
+import net.lzzy.cinemanager.fragments.CinenmasAddFragment;
+import net.lzzy.cinemanager.fragments.OrderAddFragment;
 import net.lzzy.cinemanager.fragments.OrdersFragment;
 
 /**
  * @author Administrator
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private FragmentManager manager = getSupportFragmentManager();
     private TextView tvTitle;
     private View layoutMenu;
     private SearchView search;
+    private SparseArray<String> titleArray = new SparseArray<>();
+    private SparseArray<Fragment> fragmentArray=new SparseArray<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +39,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void setTitleMenu(){
+    private void setTitleMenu() {
         layoutMenu = findViewById(R.id.bar_menu);
         layoutMenu.setVisibility(View.GONE);
+        titleArray.put(R.id.bar_add_cinema, "添加影院");
+        titleArray.put(R.id.bar_see_cinema, "影院列表");
+        titleArray.put(R.id.bar_add_order, "添加订单");
+        titleArray.put(R.id.bar_order, "我的订单");
+
 
         tvTitle = findViewById(R.id.bar_title_tv_title);
         findViewById(R.id.bar_img_menu).setOnClickListener(new View.OnClickListener() {
@@ -61,23 +73,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         layoutMenu.setVisibility(View.GONE);
-        switch (v.getId()){
-            case R.id.bar_add_cinema:
-                break;
-            case R.id.bar_see_cinema:
-                tvTitle.setText("影院列表");
-                manager.beginTransaction()
-                        .replace(R.id.cinemanager_container,new CinemasFragment())
-                        .commit();
-                break;
-            case R.id.bar_order:
-                tvTitle.setText("我的订单");
-                manager.beginTransaction()
-                        .replace(R.id.cinemanager_container,new OrdersFragment())
-                        .commit();
-                break;
-                default:
-                    break;
+        tvTitle.setText(titleArray.get(v.getId()));
+        FragmentTransaction transaction=manager.beginTransaction();
+        Fragment fragment=fragmentArray.get(v.getId());
+        if (fragment==null){
+            fragment=createFragment(v.getId());
+            fragmentArray.put(v.getId(),fragment);
+            transaction.add(R.id.fragment_container,fragment);
         }
+        for (Fragment f:manager.getFragments()){
+            transaction.hide(f);
+        }
+        transaction.show(fragment).commit();
+    }
+
+    private Fragment createFragment(int id) {
+        switch (id) {
+            case R.id.bar_add_cinema:
+                return new CinenmasAddFragment();
+            case R.id.bar_see_cinema:
+                return  new CinemasFragment();
+            case R.id.bar_add_order:
+                return new OrderAddFragment();
+            case R.id.bar_order:
+                return new OrdersFragment();
+            default:
+                break;
+        }
+        return null;
     }
 }
