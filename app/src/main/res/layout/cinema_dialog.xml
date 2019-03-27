@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f3f3f3"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="新影院"
+        android:gravity="center"
+        android:background="#FFFF00"
+        android:textSize="50dp"
+        android:textColor="@color/colorAccent"
+        />
+    <RelativeLayout
+        android:id="@+id/activity_cinema_content_layoutArea"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="请选择地点"
+            android:background="@null"
+            android:paddingStart="5dp"
+            android:gravity="center"
+            android:paddingEnd="5dp"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/activity_dialog_location"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:background="@null"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:paddingEnd="10dp"
+            android:paddingStart="5dp"
+            tools:text="广西柳州鱼峰区"
+            android:textColor="@android:color/holo_blue_dark"/>
+
+    </RelativeLayout>
+
+        <EditText
+            android:id="@+id/activity_dialog_edt_name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="请输入名称" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+        <Button android:id="@+id/activity_dialog_cancel"
+             android:layout_width="0dp"
+             android:layout_weight="1"
+             android:textSize="18dp"
+             android:gravity="center"
+             android:layout_height="wrap_content"
+             android:text="取消"/>
+
+        <Button
+            android:id="@+id/activity_dialog_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="保存"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+</LinearLayout>
