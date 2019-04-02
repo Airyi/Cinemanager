@@ -14,21 +14,29 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import net.lzzy.cinemanager.R;
+import net.lzzy.cinemanager.fragments.BaseFragment;
 import net.lzzy.cinemanager.fragments.CinemasFragment;
 import net.lzzy.cinemanager.fragments.CinenmasAddFragment;
+import net.lzzy.cinemanager.fragments.OnFragmentInteractionListener;
 import net.lzzy.cinemanager.fragments.OrderAddFragment;
 import net.lzzy.cinemanager.fragments.OrdersFragment;
+import net.lzzy.cinemanager.models.Cinema;
+import net.lzzy.cinemanager.models.Order;
+import net.lzzy.cinemanager.utils.ViewUtils;
 
 /**
  * @author Administrator
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
+        , OnFragmentInteractionListener,CinenmasAddFragment.OnCinemaCreatedListener, OrderAddFragment.OnOrderCreatedListener {
     private FragmentManager manager = getSupportFragmentManager();
     private TextView tvTitle;
     private View layoutMenu;
     private SearchView search;
     private SparseArray<String> titleArray = new SparseArray<>();
     private SparseArray<Fragment> fragmentArray=new SparseArray<>();
+    public static final String EXTRA_CINEMA_ID="cinemaId";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +44,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         setTitleMenu();
-
+        search.setOnQueryTextListener(new ViewUtils.AbstractQueryHandler() {
+            @Override
+            public boolean handleQuery(String kw) {
+                Fragment fragment=manager.findFragmentById(R.id.fragment_container);
+                if (fragment!=null){
+                    if (fragment instanceof  BaseFragment){
+                        ((BaseFragment)fragment).search(kw);
+                    }
+                }
+                return true;
+            }
+        });
     }
 
     private void setTitleMenu() {
@@ -101,5 +120,84 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
         return null;
+    }
+
+    @Override
+    public void hideSearch() {
+        search.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void cancelAddCinema() {
+        Fragment addCinemaFragment=fragmentArray.get(R.id.bar_add_cinema);
+        if (addCinemaFragment==null){
+            return;
+        }
+        Fragment cinemasFragment=fragmentArray.get(R.id.bar_see_cinema);
+        FragmentTransaction transaction = manager.beginTransaction();
+        if (cinemasFragment==null){
+            cinemasFragment=new CinemasFragment();
+            fragmentArray.put(R.id.bar_see_cinema,cinemasFragment);
+            transaction.add(R.id.fragment_container,cinemasFragment);
+        }
+        transaction.hide(addCinemaFragment).show(cinemasFragment).commit();
+        tvTitle.setText(titleArray.get(R.id.bar_see_cinema));
+    }
+
+    @Override
+    public void saveCinema(Cinema cinema) {
+        Fragment addCinemasFragment=fragmentArray.get(R.id.bar_add_cinema);
+        if (addCinemasFragment==null){
+            return;
+        }
+        Fragment cinemasFragment=fragmentArray.get(R.id.bar_see_cinema);
+        FragmentTransaction transaction=manager.beginTransaction();
+        if (cinemasFragment==null){
+                //创建CinemasFragment同时要传Cinema对象进来
+            cinemasFragment=new CinemasFragment(cinema);
+            fragmentArray.put(R.id.bar_see_cinema,cinemasFragment);
+            transaction.add(R.id.fragment_container,cinemasFragment);
+        }else {
+            ((CinemasFragment)cinemasFragment).save(cinema);
+        }
+        transaction.hide(addCinemasFragment).show(cinemasFragment).commit();
+        tvTitle.setText(titleArray.get(R.id.bar_see_cinema));
+    }
+
+    @Override
+    public void cancelAddOrder() {
+        Fragment addOrderFragment=fragmentArray.get(R.id.bar_add_order);
+        if (addOrderFragment==null){
+            return;
+        }
+        Fragment OrderFragment=fragmentArray.get(R.id.bar_order);
+        FragmentTransaction transaction = manager.beginTransaction();
+        if (OrderFragment==null){
+            OrderFragment=new OrdersFragment();
+            fragmentArray.put(R.id.bar_order,OrderFragment);
+            transaction.add(R.id.fragment_container,OrderFragment);
+        }
+        transaction.hide(addOrderFragment).show(OrderFragment).commit();
+        tvTitle.setText(titleArray.get(R.id.bar_order));
+    }
+
+    @Override
+    public void saveOrder(Order order) {
+        Fragment addOrdersFragment=fragmentArray.get(R.id.bar_add_order);
+        if (addOrdersFragment==null){
+            return;
+        }
+        Fragment OrdersFragment=fragmentArray.get(R.id.bar_order);
+        FragmentTransaction transaction=manager.beginTransaction();
+        if (OrdersFragment==null){
+            //创建CinemasFragment同时要传Cinema对象进来
+            OrdersFragment=new OrdersFragment(order);
+            fragmentArray.put(R.id.bar_order,OrdersFragment);
+            transaction.add(R.id.fragment_container,OrdersFragment);
+        }else {
+            ((OrdersFragment)OrdersFragment).save(order);
+        }
+        transaction.hide(addOrdersFragment).show(OrdersFragment).commit();
+        tvTitle.setText(titleArray.get(R.id.bar_see_cinema));
     }
 }

@@ -70,4 +70,8 @@ public class OrderFactory {
         repository.delete(order);
         return true;
     }
+
+    public Object getById(String toString) {
+        return null;
+    }
 }
