@@ -1,4 +1,5 @@
 package net.lzzy.cinemanager.fragments;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -7,6 +8,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import net.lzzy.cinemanager.R;
@@ -27,6 +29,7 @@ import java.util.List;
  * Description:
  */
 public class OrdersFragment extends BaseFragment {
+    public static final String ORDER = "order";
     private Order order;
     private List<Order> orders;
     private ListView lv;
@@ -37,12 +40,22 @@ public class OrdersFragment extends BaseFragment {
     private final float MNT_DISTANCE = 100;
     boolean isDelete = false;
 
-    public OrdersFragment(){}
-    public OrdersFragment(Order order){
-        this.order=order;
+    public static OrdersFragment newInstance(Order order) {
+        OrdersFragment fragment = new OrdersFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ORDER,order);
+        fragment.setArguments(args);
+        return fragment;
     }
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            Order order = getArguments().getParcelable(ORDER);
+            this.order = order;
+        }
 
-
+    }
     @Override
     protected void populate() {
         lv=find(R.id.activity_cinema_content_lv);

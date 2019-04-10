@@ -1,8 +1,12 @@
 package net.lzzy.cinemanager.fragments;
 
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListView;
+
+import androidx.annotation.Nullable;
+
 import net.lzzy.cinemanager.R;
 import net.lzzy.cinemanager.models.Cinema;
 import net.lzzy.cinemanager.models.CinemaFactory;
@@ -16,15 +20,28 @@ import java.util.List;
  */
 public class CinemasFragment extends BaseFragment {
 
+    public static String CINEMA="cinema";
     private ListView lv;
     private List<Cinema> cinemas;
     private CinemaFactory factory=CinemaFactory.getInstance();
     private GenericAdapter<Cinema> adapter;
     private Cinema cinema;
 
-    public CinemasFragment(){}
-    public CinemasFragment(Cinema cinema){
-        this.cinema=cinema;
+    public static CinemasFragment newInstance(Cinema cinema){
+        CinemasFragment fragment=new CinemasFragment();
+        Bundle args=new Bundle();
+        args.putParcelable(CINEMA,cinema);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments()!=null){
+            Cinema cinema=getArguments().getParcelable(CINEMA);
+            this.cinema=cinema;
+        }
     }
     @Override
     protected void populate() {
@@ -74,5 +91,8 @@ public class CinemasFragment extends BaseFragment {
             cinemas.addAll(factory.searchCinemas(kw));
         }
         adapter.notifyDataSetChanged();
+    }
+    public interface OnCinemaSelectedListener{
+        void onCinemaSelected(String cinemaId);
     }
 }

@@ -28,7 +28,7 @@ import net.lzzy.cinemanager.utils.ViewUtils;
  * @author Administrator
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
-        , OnFragmentInteractionListener,CinenmasAddFragment.OnCinemaCreatedListener, OrderAddFragment.OnOrderCreatedListener {
+        , OnFragmentInteractionListener,CinenmasAddFragment.OnCinemaCreatedListener, OrderAddFragment.OnOrderCreatedListener ,CinemasFragment.OnCinemaSelectedListener{
     private FragmentManager manager = getSupportFragmentManager();
     private TextView tvTitle;
     private View layoutMenu;
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FragmentTransaction transaction=manager.beginTransaction();
         if (cinemasFragment==null){
                 //创建CinemasFragment同时要传Cinema对象进来
-            cinemasFragment=new CinemasFragment(cinema);
+            cinemasFragment=CinemasFragment.newInstance(cinema);
             fragmentArray.put(R.id.bar_see_cinema,cinemasFragment);
             transaction.add(R.id.fragment_container,cinemasFragment);
         }else {
@@ -187,17 +187,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (addOrdersFragment==null){
             return;
         }
-        Fragment OrdersFragment=fragmentArray.get(R.id.bar_order);
+        Fragment ordersFragment=fragmentArray.get(R.id.bar_order);
         FragmentTransaction transaction=manager.beginTransaction();
-        if (OrdersFragment==null){
+        if (ordersFragment==null){
             //创建CinemasFragment同时要传Cinema对象进来
-            OrdersFragment=new OrdersFragment(order);
-            fragmentArray.put(R.id.bar_order,OrdersFragment);
-            transaction.add(R.id.fragment_container,OrdersFragment);
+
+            ordersFragment=OrdersFragment.newInstance(order);
+            fragmentArray.put(R.id.bar_order,ordersFragment);
+            transaction.add(R.id.fragment_container,ordersFragment);
         }else {
-            ((OrdersFragment)OrdersFragment).save(order);
+            ((OrdersFragment)ordersFragment).save(order);
         }
-        transaction.hide(addOrdersFragment).show(OrdersFragment).commit();
+        transaction.hide(addOrdersFragment).show(ordersFragment).commit();
         tvTitle.setText(titleArray.get(R.id.bar_see_cinema));
+    }
+
+    @Override
+    public void onCinemaSelected(String cinemaId) {
+
     }
 }
